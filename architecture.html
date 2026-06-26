@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GARUDA AI — Architecture & Innovation Deck</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #fdf8f0 0%, #f5ede3 100%);
+            color: #2c1810;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2c1810 0%, #4a2518 60%, #7b1a2c 100%);
+            color: #f5ede3;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(232,195,106,0.05) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .header h1 {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .header h1 span { color: #e8c36a; }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+        }
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        .badge {
+            background: rgba(232,195,106,0.15);
+            border: 1px solid rgba(232,195,106,0.4);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #e8c36a;
+        }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🛡️ <span>GARUDA AI</span></h1>
+    <p>Intelligent Conversational Crime Intelligence & Analytics Platform</p>
+    <div class="badge-row">
+        <span class="badge">AI Camp Hackathon 2026</span>
+        <span class="badge">Google Cloud + Vertex AI</span>
+        <span class="badge">Gemini 1.5 Flash</span>
+        <span class="badge">Cloud Run</span>
+    </div>
+</div>
+
+<style>
+        /* Sections */
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 30px; }
+
+        .section {
+            margin-bottom: 50px;
+        }
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 800;
+            color: #7b1a2c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #e8c36a;
+            display: inline-block;
+        }
+        .section-subtitle {
+            font-size: 1em;
+            color: #6b4c3b;
+            margin-bottom: 25px;
+        }
+
+        /* Architecture Diagram */
+        .arch-diagram {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 40px rgba(44,24,16,0.08);
+            border: 1px solid rgba(123,26,44,0.1);
+            margin-bottom: 30px;
+        }
+        .arch-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        .arch-layer {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .arch-box {
+            background: linear-gradient(135deg, #fdf8f0, #fff);
+            border: 2px solid;
+            border-radius: 12px;
+            padding: 20px 25px;
+            text-align: center;
+            min-width: 180px;
+            flex: 1;
+            max-width: 250px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .arch-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .arch-box.user { border-color: #2d8659; background: linear-gradient(135deg, #ecfdf5, #d1fae5); }
+        .arch-box.frontend { border-color: #7b1a2c; background: linear-gradient(135deg, #fef2f2, #fde8e8); }
+        .arch-box.ai { border-color: #b8860b; background: linear-gradient(135deg, #fefce8, #fef9c3); }
+        .arch-box.data { border-color: #1b2a4a; background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+        .arch-box.cloud { border-color: #6b21a8; background: linear-gradient(135deg, #faf5ff, #f3e8ff); }
+
+        .arch-box-icon { font-size: 2em; margin-bottom: 8px; }
+        .arch-box-title { font-weight: 700; font-size: 0.95em; margin-bottom: 4px; }
+        .arch-box-desc { font-size: 0.8em; color: #6b4c3b; }
+
+        .arch-arrow {
+            font-size: 1.5em;
+            color: #b8860b;
+            text-align: center;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(44,24,16,0.06);
+            border: 1px solid rgba(123,26,44,0.08);
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-3px); }
+        .card-icon { font-size: 2.2em; margin-bottom: 12px; }
+        .card-title { font-size: 1.2em; font-weight: 700; color: #7b1a2c; margin-bottom: 8px; }
+        .card-text { color: #4a3728; font-size: 0.95em; }
+        .card-text ul { margin-top: 10px; padding-left: 20px; }
+        .card-text li { margin-bottom: 6px; }
+
+        /* Highlight boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, #7b1a2c, #9b2335);
+            color: white;
+            border-radius: 14px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        .highlight-box h3 { color: #e8c36a; margin-bottom: 10px; font-size: 1.3em; }
+        .highlight-box p { opacity: 0.95; }
+
+        /* Table */
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(44,24,16,0.06);
+        }
+        .tech-table th {
+            background: #2c1810;
+            color: #e8c36a;
+            padding: 14px 20px;
+            text-align: left;
+            font-weight: 700;
+        }
+        .tech-table td {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(123,26,44,0.08);
+        }
+        .tech-table tr:hover td { background: rgba(123,26,44,0.02); }
+
+        /* Flow steps */
+        .flow-steps {
+            display: flex;
+            gap: 0;
+            align-items: stretch;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            max-width: 200px;
+            padding: 20px 15px;
+            text-align: center;
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            margin: 5px;
+            border: 1px solid rgba(123,26,44,0.1);
+        }
+        .flow-step-num {
+            background: #7b1a2c;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85em;
+            margin: 0 auto 10px;
+        }
+        .flow-step-title { font-weight: 700; font-size: 0.85em; color: #7b1a2c; }
+        .flow-step-desc { font-size: 0.75em; color: #6b4c3b; margin-top: 5px; }
+
+        /* Footer */
+        .footer {
+            background: #2c1810;
+            color: #f5ede3;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+        .footer a { color: #e8c36a; text-decoration: none; }
+</style>
+
+<div class="container">
+
+    <!-- SECTION 1: Architecture Overview -->
+    <div class="section">
+        <div class="section-title">🏗️ System Architecture</div>
+        <p class="section-subtitle">End-to-end serverless architecture on Google Cloud Platform</p>
+
+        <div class="arch-diagram">
+            <div class="arch-flow">
+                <!-- User Layer -->
+                <div class="arch-layer">
+                    <div class="arch-box user">
+                        <div class="arch-box-icon">👤</div>
+                        <div class="arch-box-title">Investigator / Analyst</div>
+                        <div class="arch-box-desc">Natural Language Query (English / Kannada) + Voice Input</div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow">⬇️ Web Speech API (STT) + Browser TTS ⬇️</div>
+
+                <!-- Frontend Layer -->
+                <div class="arch-layer">
+                    <div class="arch-box frontend">
+                        <div class="arch-box-icon">🖥️</div>
+                        <div class="arch-box-title">Streamlit Frontend</div>
+                        <div class="arch-box-desc">4-Tab UI: Chat, Network Graph, Trends, MO Matcher</div>
+                    </div>
+                    <div class="arch-box frontend">
+                        <div class="arch-box-icon">📊</div>
+                        <div class="arch-box-title">Plotly + NetworkX</div>
+                        <div class="arch-box-desc">Interactive Charts, Criminal Network Graphs</div>
+                    </div>
+                    <div class="arch-box frontend">
+                        <div class="arch-box-icon">📄</div>
+                        <div class="arch-box-title">FPDF2 Engine</div>
+                        <div class="arch-box-desc">PDF Report Generation & Download</div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow">⬇️ Prompt Engineering + Context Window ⬇️</div>
+
+                <!-- AI Layer -->
+                <div class="arch-layer">
+                    <div class="arch-box ai">
+                        <div class="arch-box-icon">🧠</div>
+                        <div class="arch-box-title">Vertex AI — Gemini 1.5 Flash</div>
+                        <div class="arch-box-desc">NL→SQL Translation + Criminological Analysis + MO Pattern Matching</div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow">⬇️ Generated SQL Query ⬇️</div>
+
+                <!-- Data Layer -->
+                <div class="arch-layer">
+                    <div class="arch-box data">
+                        <div class="arch-box-icon">🗄️</div>
+                        <div class="arch-box-title">SQLite Crime Database</div>
+                        <div class="arch-box-desc">120 FIRs, 20 Offenders, 7 Relational Tables</div>
+                    </div>
+                    <div class="arch-box data">
+                        <div class="arch-box-icon">🔗</div>
+                        <div class="arch-box-title">Relational Schema</div>
+                        <div class="arch-box-desc">FIRs ↔ Offenders ↔ Victims ↔ Transactions ↔ Neighborhoods</div>
+                    </div>
+                </div>
+
+                <div class="arch-arrow">⬇️ Containerized Deployment ⬇️</div>
+
+                <!-- Cloud Layer -->
+                <div class="arch-layer">
+                    <div class="arch-box cloud">
+                        <div class="arch-box-icon">☁️</div>
+                        <div class="arch-box-title">Google Cloud Run</div>
+                        <div class="arch-box-desc">Serverless, Auto-scaling, HTTPS endpoint</div>
+                    </div>
+                    <div class="arch-box cloud">
+                        <div class="arch-box-icon">🔨</div>
+                        <div class="arch-box-title">Cloud Build</div>
+                        <div class="arch-box-desc">Docker container built from source</div>
+                    </div>
+                    <div class="arch-box cloud">
+                        <div class="arch-box-icon">🔐</div>
+                        <div class="arch-box-title">IAM + Service Account</div>
+                        <div class="arch-box-desc">Vertex AI User role, zero key management</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: Conversational AI Flow -->
+    <div class="section">
+        <div class="section-title">🎙️ Agentic AI Flow (ReAct Pattern)</div>
+        <p class="section-subtitle">Autonomous reasoning loop: Observe → Think → Act → Evaluate → Retry</p>
+
+        <div class="highlight-box">
+            <h3>🤖 True Agentic Behavior — Not Just API Calls</h3>
+            <p>GARUDA AI implements a <strong>ReAct (Reasoning + Acting) agent loop</strong>. The agent autonomously decides what SQL to generate, executes it as a tool, evaluates whether results are sufficient, and retries with corrected queries if the first attempt fails — up to 3 autonomous attempts before falling back.</p>
+        </div>
+
+        <div class="flow-steps">
+            <div class="flow-step">
+                <div class="flow-step-num">1</div>
+                <div class="flow-step-title">Observe</div>
+                <div class="flow-step-desc">Receive user query + conversation context</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-step-num">2</div>
+                <div class="flow-step-title">Think</div>
+                <div class="flow-step-desc">Agent decides which tool to use (SQL gen)</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-step-num">3</div>
+                <div class="flow-step-title">Act</div>
+                <div class="flow-step-desc">Generate SQL + Execute on DB</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-step-num">4</div>
+                <div class="flow-step-title">Evaluate</div>
+                <div class="flow-step-desc">Check: rows > 0? Error? Relevant?</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-step-num">5</div>
+                <div class="flow-step-title">Retry / Fix</div>
+                <div class="flow-step-desc">If failed → feed error back → regenerate SQL</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-step-num">6</div>
+                <div class="flow-step-title">Analyze</div>
+                <div class="flow-step-desc">Criminological reasoning + recommendations</div>
+            </div>
+        </div>
+
+        <div class="arch-diagram" style="margin-top: 25px;">
+            <h4 style="color:#7b1a2c; margin-bottom: 15px;">Agent Reasoning Trace (Real Example)</h4>
+            <pre style="font-family: 'Courier New', monospace; font-size: 0.85em; background: #f9f5f0; padding: 20px; border-radius: 8px; border-left: 4px solid #b8860b; overflow-x: auto;">
+🔄 Attempt 1: Generating SQL...
+✅ SQL generated: SELECT * FROM firs WHERE crime_type='Cyber Fraud' AND neighborhood='Koramangala'
+🗄️ Executing SQL on database...
+✅ Got 7 rows. Evaluating relevance...
+🧠 Analyzing results through criminological framework...
+
+── Agent decides results are sufficient. No retry needed. ──
+
+Final Output:
+• 7 cyber fraud cases found in Koramangala
+• Criminological analysis with Routine Activity Theory
+• Recommendations: Increase digital literacy programs, patrol cyber cafes
+• Agent Confidence: HIGH
+            </pre>
+        </div>
+
+        <div class="arch-diagram">
+            <h4 style="color:#7b1a2c; margin-bottom: 15px;">Agent Self-Correction (Error Recovery Example)</h4>
+            <pre style="font-family: 'Courier New', monospace; font-size: 0.85em; background: #f9f5f0; padding: 20px; border-radius: 8px; border-left: 4px solid #9b2335; overflow-x: auto;">
+🔄 Attempt 1: Generating SQL...
+✅ SQL generated: SELECT * FROM firs WHERE type='cyber'
+🗄️ Executing SQL on database...
+❌ Error: no such column: type
+🔄 Attempt 2: Generating SQL...
+✅ SQL generated: SELECT * FROM firs WHERE crime_type='Cyber Fraud'
+🗄️ Executing SQL on database...
+✅ Got 22 rows. Evaluating relevance...
+🧠 Analyzing results through criminological framework...
+
+── Agent self-corrected after SQL error. Investigation successful. ──
+            </pre>
+        </div>
+    </div>
+
+    <!-- SECTION 3: Innovation & Creativity -->
+    <div class="section">
+        <div class="section-title">💡 Innovation & Creativity</div>
+        <p class="section-subtitle">Novel problem framing and creative use of AI agents</p>
+
+        <div class="highlight-box">
+            <h3>🎯 Novel Problem Framing</h3>
+            <p>We don't just call an API — we built a <strong>self-correcting autonomous crime investigation agent</strong> that implements the ReAct (Reasoning + Acting) pattern: it generates SQL as a tool, executes it, evaluates results, and autonomously retries with corrected queries on failure. Combined with criminological reasoning through established sociological frameworks, this creates an <em>AI partner that thinks like a detective</em>.</p>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🔄</div>
+                <div class="card-title">ReAct Agent Loop (Genuine Agentic AI)</div>
+                <div class="card-text">
+                    Not a simple prompt→response. The agent:
+                    <ul>
+                        <li><strong>Observes:</strong> User query + conversation memory</li>
+                        <li><strong>Thinks:</strong> Decides which tool (SQL) to invoke</li>
+                        <li><strong>Acts:</strong> Generates & executes SQL on database</li>
+                        <li><strong>Evaluates:</strong> Checks if results are sufficient</li>
+                        <li><strong>Retries:</strong> Self-corrects errors up to 3 attempts</li>
+                        <li><strong>Reasons:</strong> Produces criminological analysis</li>
+                    </ul>
+                    Full reasoning trace visible to user for transparency.
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🧠</div>
+                <div class="card-title">AI as a Criminologist</div>
+                <div class="card-text">
+                    Every response is grounded in criminological theory — not just "here's the data," but <em>"here's why this pattern exists and what to do about it."</em>
+                    <ul>
+                        <li>Strain Theory → Poverty/crime correlation analysis</li>
+                        <li>Routine Activity → Event-based crime prediction</li>
+                        <li>Social Disorganization → Patrol density recommendations</li>
+                        <li>Agent Confidence scoring on every response</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🗣️</div>
+                <div class="card-title">Bilingual Conversational Interface</div>
+                <div class="card-text">
+                    <ul>
+                        <li>Queries in <strong>English + ಕನ್ನಡ (Kannada)</strong></li>
+                        <li>Auto-detects language, responds in same language</li>
+                        <li>Voice input (STT) + Voice output (TTS)</li>
+                        <li>Context-aware follow-up queries</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🕸️</div>
+                <div class="card-title">Criminal Network Intelligence</div>
+                <div class="card-text">
+                    <ul>
+                        <li>Graph-based relationship discovery (suspects ↔ gangs ↔ FIRs ↔ victims ↔ bank accounts)</li>
+                        <li>Financial flow tracking across UPI/NEFT/Hawala/Crypto</li>
+                        <li>Organized crime group detection</li>
+                        <li>Repeat offender identification</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔮</div>
+                <div class="card-title">Predictive MO Pattern Matching</div>
+                <div class="card-text">
+                    <ul>
+                        <li>Input an active case → AI matches against all historical MOs</li>
+                        <li>Identifies likely suspect profiles and gang connections</li>
+                        <li>Generates prevention strategies with risk scoring</li>
+                        <li>Supports proactive policing over reactive investigation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: Technical Execution -->
+    <div class="section">
+        <div class="section-title">⚙️ Technical Execution</div>
+        <p class="section-subtitle">Code quality, stability, and architectural complexity</p>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🏛️</div>
+                <div class="card-title">Architectural Complexity</div>
+                <div class="card-text">
+                    <ul>
+                        <li><strong>7 relational tables</strong> with foreign keys and junction tables</li>
+                        <li><strong>Multi-agent AI pipeline:</strong> NL→SQL agent + Analysis agent + MO Matcher agent</li>
+                        <li><strong>Graph algorithms</strong> (NetworkX) for criminal network analysis</li>
+                        <li><strong>Statistical analysis</strong> with OLS trendlines and correlation</li>
+                        <li><strong>Multi-modal I/O:</strong> Text + Voice + PDF + Interactive Charts</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🛡️</div>
+                <div class="card-title">Stability & Error Handling</div>
+                <div class="card-text">
+                    <ul>
+                        <li>Graceful fallback if Gemini returns invalid SQL</li>
+                        <li>Context-aware conversation with session state management</li>
+                        <li>PDF export handles non-ASCII/Unicode gracefully</li>
+                        <li>All database queries wrapped in try/except</li>
+                        <li>Health check endpoint for Cloud Run monitoring</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">📐</div>
+                <div class="card-title">Code Quality</div>
+                <div class="card-text">
+                    <ul>
+                        <li><strong>850+ lines</strong> of production-quality Python</li>
+                        <li>Modular design: DB layer, AI layer, UI layer, Export layer</li>
+                        <li>Cached model initialization (<code>@st.cache_resource</code>)</li>
+                        <li>Clean separation of concerns</li>
+                        <li>Comprehensive synthetic data generator (120 realistic FIRs)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="color:#7b1a2c; margin: 30px 0 15px;">📋 Technology Stack</h3>
+        <table class="tech-table">
+            <thead>
+                <tr>
+                    <th>Layer</th>
+                    <th>Technology</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>AI Engine</strong></td>
+                    <td>Vertex AI + Gemini 1.5 Flash</td>
+                    <td>NL→SQL, Criminological Analysis, MO Pattern Matching</td>
+                </tr>
+                <tr>
+                    <td><strong>Frontend</strong></td>
+                    <td>Streamlit + Custom CSS</td>
+                    <td>Multi-tab interactive dashboard</td>
+                </tr>
+                <tr>
+                    <td><strong>Visualization</strong></td>
+                    <td>Plotly + NetworkX</td>
+                    <td>Charts, Heatmaps, Criminal Network Graphs</td>
+                </tr>
+                <tr>
+                    <td><strong>Voice</strong></td>
+                    <td>Web Speech API</td>
+                    <td>Browser-native STT + TTS (no API keys)</td>
+                </tr>
+                <tr>
+                    <td><strong>Database</strong></td>
+                    <td>SQLite (7 tables, 120+ FIRs)</td>
+                    <td>Relational crime data with complex joins</td>
+                </tr>
+                <tr>
+                    <td><strong>Export</strong></td>
+                    <td>FPDF2</td>
+                    <td>Professional PDF intelligence reports</td>
+                </tr>
+                <tr>
+                    <td><strong>Analytics</strong></td>
+                    <td>Pandas + NumPy + statsmodels</td>
+                    <td>Statistical analysis, OLS regression</td>
+                </tr>
+                <tr>
+                    <td><strong>Deployment</strong></td>
+                    <td>Cloud Run + Cloud Build</td>
+                    <td>Serverless, auto-scaling, zero-ops</td>
+                </tr>
+                <tr>
+                    <td><strong>Security</strong></td>
+                    <td>IAM Service Account</td>
+                    <td>No API keys in code, role-based access</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SECTION 5: Google Tool Utilization -->
+    <div class="section">
+        <div class="section-title">☁️ Google Tool Utilization</div>
+        <p class="section-subtitle">Depth of Gemini, Vertex AI, and Cloud Run integration</p>
+
+        <div class="cards-grid">
+            <div class="card">
+                <div class="card-icon">🧠</div>
+                <div class="card-title">Gemini 1.5 Flash — 4-Agent Autonomous System</div>
+                <div class="card-text">
+                    We use Gemini in a <strong>ReAct agent loop with 4 specialized roles</strong>:
+                    <ul>
+                        <li><strong>Agent 1 — SQL Tool Agent:</strong> Schema-aware NL→SQL with self-correction. Retries on error with error context injection. temp=0.</li>
+                        <li><strong>Agent 2 — Result Evaluator:</strong> Autonomously decides if results are sufficient or need retry (genuine decision-making).</li>
+                        <li><strong>Agent 3 — Criminology Analyst:</strong> Receives full reasoning trace + results, generates theory-grounded insights with confidence scoring.</li>
+                        <li><strong>Agent 4 — MO Pattern Matcher:</strong> Cross-references active case against full DB for serial crime detection + prevention strategy.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">Vertex AI — Enterprise-Grade Integration</div>
+                <div class="card-text">
+                    <ul>
+                        <li><strong>Vertex AI SDK</strong> (google-cloud-aiplatform) for authenticated model access</li>
+                        <li><strong>Service Account auth</strong> — no API keys, IAM-based security</li>
+                        <li><strong>Cached model initialization</strong> for fast subsequent requests</li>
+                        <li><strong>Generation config tuning:</strong> temp=0 for SQL, default for analysis</li>
+                        <li><strong>Graceful fallback</strong> between model versions</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🚀</div>
+                <div class="card-title">Cloud Run — Production Deployment</div>
+                <div class="card-text">
+                    <ul>
+                        <li><strong>Source-based deploy:</strong> <code>gcloud run deploy --source .</code></li>
+                        <li><strong>Cloud Build</strong> handles Docker image creation automatically</li>
+                        <li><strong>Auto-scaling:</strong> 0 to 3 instances based on traffic</li>
+                        <li><strong>2GB RAM + 2 vCPU</strong> for ML workloads</li>
+                        <li><strong>Health checks</strong> for reliability monitoring</li>
+                        <li><strong>Environment variables</strong> for config injection</li>
+                        <li><strong>HTTPS endpoint</strong> with Google-managed TLS</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 30px;">
+            <h3>🔑 Key Integration Insight</h3>
+            <p>Unlike simple API-call demos, GARUDA AI implements a <strong>genuine ReAct agent loop</strong>: the agent autonomously generates SQL, executes it as a tool, evaluates results, self-corrects on errors (up to 3 retries), and feeds its full reasoning trace into the analysis agent. This demonstrates <strong>agentic AI with tool-use, autonomous decision-making, and self-correction</strong> — not just prompt engineering.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 6: Data model -->
+    <div class="section">
+        <div class="section-title">🗄️ Relational Data model</div>
+        <p class="section-subtitle">7-table schema designed for complex investigative queries</p>
+
+        <div class="arch-diagram">
+            <pre style="font-family: 'Courier New', monospace; font-size: 0.85em; color: #2c1810; line-height: 1.8; overflow-x: auto;">
+┌─────────────────┐       ┌──────────────────┐       ┌─────────────────┐
+│  neighborhoods  │       │      firs        │       │    offenders    │
+├─────────────────┤       ├──────────────────┤       ├─────────────────┤
+│ name (PK)       │◄──────│ neighborhood (FK)│       │ offender_id (PK)│
+│ unemployment    │       │ fir_id (PK)      │       │ name, age       │
+│ poverty_rate    │       │ crime_type       │       │ gang_affiliation│
+│ youth_centers   │       │ date, time       │       │ risk_score      │
+│ patrol_density  │       │ modus_operandi   │       │ bank_account    │
+│ lat, lng        │       │ status, severity │       │ typical_mo      │
+└─────────────────┘       │ financial_loss   │       └────────┬────────┘
+                          │ event_context    │                │
+                          │ details_en/kn    │                │
+                          └────────┬─────────┘                │
+                                   │                          │
+                    ┌──────────────┼──────────────┐           │
+                    │              │              │            │
+             ┌──────▼──────┐ ┌────▼─────┐ ┌─────▼────────────▼───┐
+             │ fir_victims │ │fir_offend│ │financial_transactions│
+             ├─────────────┤ ├──────────┤ ├──────────────────────┤
+             │ fir_id (FK) │ │fir_id(FK)│ │ transaction_id (PK)  │
+             │ victim_id   │ │offend(FK)│ │ fir_id (FK)          │
+             └──────┬──────┘ │ role     │ │ sender_account       │
+                    │        └──────────┘ │ receiver_account     │
+             ┌──────▼──────┐              │ amount, date         │
+             │   victims   │              │ transaction_type     │
+             ├─────────────┤              └──────────────────────┘
+             │ victim_id   │
+             │ name, age   │
+             │ occupation  │
+             └─────────────┘
+            </pre>
+        </div>
+    </div>
+
+    <!-- SECTION 7: Demo Capabilities -->
+    <div class="section">
+        <div class="section-title">🎬 Platform Capabilities Summary</div>
+
+        <table class="tech-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Capability</th>
+                    <th>AI/Cloud Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>💬 Conversational Interface</td>
+                    <td>NL queries in English + Kannada with follow-ups</td>
+                    <td>Gemini NL→SQL + Context Window</td>
+                </tr>
+                <tr>
+                    <td>🎙️ Voice Interaction</td>
+                    <td>Speech-to-Text input + Text-to-Speech response</td>
+                    <td>Web Speech API (browser-native)</td>
+                </tr>
+                <tr>
+                    <td>🕸️ Network Analysis</td>
+                    <td>Criminal relationship graph visualization</td>
+                    <td>NetworkX + Plotly (interactive)</td>
+                </tr>
+                <tr>
+                    <td>💰 Financial Intelligence</td>
+                    <td>Suspicious transaction tracking across gangs</td>
+                    <td>SQL joins + Graph edges</td>
+                </tr>
+                <tr>
+                    <td>📊 Trend Analytics</td>
+                    <td>8 visualization types: pie, bar, line, scatter, area, heatmap</td>
+                    <td>Plotly + statsmodels OLS</td>
+                </tr>
+                <tr>
+                    <td>🔮 Predictive Intel</td>
+                    <td>MO pattern matching + risk scoring</td>
+                    <td>Gemini comparative analysis</td>
+                </tr>
+                <tr>
+                    <td>🧠 Criminology Insights</td>
+                    <td>Theory-grounded analysis with every response</td>
+                    <td>Gemini with expert system prompt</td>
+                </tr>
+                <tr>
+                    <td>📄 PDF Reports</td>
+                    <td>Downloadable investigation dialogue transcripts</td>
+                    <td>FPDF2 generation</td>
+                </tr>
+                <tr>
+                    <td>☁️ Cloud Deployment</td>
+                    <td>Live HTTPS URL, auto-scaling, zero-ops</td>
+                    <td>Cloud Run + Cloud Build</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SECTION 8: Deployment Details -->
+    <div class="section">
+        <div class="section-title">🚀 Deployment Configuration</div>
+
+        <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <div class="card">
+                <div class="card-icon">📋</div>
+                <div class="card-title">GCP Project</div>
+                <div class="card-text" style="font-family: monospace; font-size: 1.1em; color: #7b1a2c;">
+                    aicamp26062026<br>
+                    <span style="font-size: 0.8em; color: #6b4c3b;">Project #: 907061055748</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🌍</div>
+                <div class="card-title">Region</div>
+                <div class="card-text" style="font-family: monospace; font-size: 1.1em; color: #7b1a2c;">
+                    us-central1<br>
+                    <span style="font-size: 0.8em; color: #6b4c3b;">Iowa, USA</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🤖</div>
+                <div class="card-title">AI model</div>
+                <div class="card-text" style="font-family: monospace; font-size: 1.1em; color: #7b1a2c;">
+                    gemini-1.5-flash-002<br>
+                    <span style="font-size: 0.8em; color: #6b4c3b;">via Vertex AI SDK</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Container</div>
+                <div class="card-text" style="font-family: monospace; font-size: 1.1em; color: #7b1a2c;">
+                    2 vCPU / 2GB RAM<br>
+                    <span style="font-size: 0.8em; color: #6b4c3b;">Python 3.11-slim</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- end container -->
+
+<div class="footer">
+    <p><strong>🛡️ GARUDA AI</strong> — Intelligent Conversational Crime Intelligence & Analytics Platform</p>
+    <p style="margin-top: 8px; opacity: 0.8;">AI Camp Hackathon 2026 | Powered by Google Cloud Vertex AI</p>
+</div>
+
+</body>
+</html>

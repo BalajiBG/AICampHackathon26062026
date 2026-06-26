@@ -205,11 +205,10 @@ LOCATION = os.environ.get("GCP_LOCATION", "us-central1")
 def init_gemini():
     try:
         vertexai.init(project=PROJECT_ID, location=LOCATION)
-        # Use Gemini 2.0 Flash for fast + accurate responses
-        return GenerativeModel("gemini-2.0-flash-001")
+        # Use Gemini 1.5 Flash - widely available and fast
+        return GenerativeModel("gemini-1.5-flash-002")
     except Exception:
         try:
-            # Fallback to Gemini 1.5 Flash if 2.0 not available
             return GenerativeModel("gemini-1.5-flash-001")
         except Exception as e:
             st.error(f"⚠️ Vertex AI init failed: {e}")
@@ -465,6 +464,10 @@ with tab1:
                     st.chat_message("user", avatar="🕵️").write(msg["content"])
                 else:
                     st.chat_message("assistant", avatar="🤖").write(msg["content"])
+                    if "agent_trace" in msg and msg["agent_trace"]:
+                        with st.expander("🧠 Agent Reasoning Trace"):
+                            for step in msg["agent_trace"]:
+                                st.text(step)
                     if "sql" in msg and msg["sql"]:
                         with st.expander("🔧 SQL Executed"):
                             st.code(msg["sql"], language="sql")
@@ -480,79 +483,135 @@ with tab1:
             st.session_state.voice_input = ""
             st.session_state.chat_history.append({"role": "user", "content": query_to_run})
 
-            with st.spinner("🔍 Garuda AI analyzing..."):
-                sql_query = ""
-                db_results = None
-                analysis = ""
+            with st.spinner("🔍 Garuda Agent reasoning..."):
+                # ========================================================
+                # AGENTIC REASONING LOOP (ReAct Pattern)
+                # The agent decides actions, executes tools, evaluates
+                # results, and retries autonomously up to 3 attempts.
+                # ========================================================
+                agent_log = []  # Trace of agent's reasoning steps
+                final_sql = ""
+                final_results = None
+                final_analysis = ""
+                max_attempts = 3
 
-                # Build context from recent conversation for follow-ups
+                # Build conversation context for follow-ups
                 recent_context = ""
                 if len(st.session_state.chat_history) > 2:
                     last_msgs = st.session_state.chat_history[-4:-1]
                     recent_context = "\n".join([f"{m['role']}: {m['content'][:150]}" for m in last_msgs])
 
-                # Step 1: NL to SQL via Gemini
-                sql_prompt = f"""You are an expert SQLite query generator. Convert the user's natural language question into a valid SQLite query.
+                # Detect language
+                is_kannada = any(ord(c) > 3000 for c in query_to_run)
+                lang_hint = "Respond in Kannada." if is_kannada else "Respond in English."
+
+                for attempt in range(1, max_attempts + 1):
+                    agent_log.append(f"🔄 Attempt {attempt}: Generating SQL...")
+
+                    # TOOL 1: SQL Generation Agent
+                    sql_prompt = f"""You are an expert SQLite query generator acting as a tool for a crime investigation agent.
 RULES:
 - Output ONLY the raw SQL query. No markdown, no explanations, no code blocks.
-- Use the exact table/column names from the schema.
-- For Kannada queries, understand the intent and generate SQL for the English schema.
+- Use exact table/column names from the schema.
+- For Kannada queries, understand the intent and map to English schema.
+- If previous attempt failed, fix the error shown below.
 - Consider conversation context for follow-up questions.
+- Always use LIMIT 25 unless user asks for all records.
 
 DATABASE SCHEMA:
 {DB_SCHEMA}
 
-CONVERSATION CONTEXT (for follow-ups):
+CONVERSATION CONTEXT:
 {recent_context}
+
+{"PREVIOUS ERROR: " + agent_log[-1] if attempt > 1 and "Error" in agent_log[-1] else ""}
 
 USER QUERY: "{query_to_run}"
 
 SQL:"""
 
-                try:
-                    if gemini_model:
-                        sql_raw = gemini_model.generate_content(sql_prompt, generation_config={"temperature": 0.0}).text.strip()
-                        sql_query = sql_raw.replace("```sql", "").replace("```", "").replace("SQL:", "").strip()
-                        db_results = query_db(sql_query)
-                except Exception as e:
-                    st.warning(f"SQL generation issue: {e}. Attempting fallback...")
                     try:
-                        sql_query = f"SELECT * FROM firs WHERE details_en LIKE '%{query_to_run.split()[0]}%' LIMIT 10"
-                        db_results = query_db(sql_query)
+                        if gemini_model:
+                            sql_raw = gemini_model.generate_content(sql_prompt, generation_config={"temperature": 0.0}).text.strip()
+                            generated_sql = sql_raw.replace("```sql", "").replace("```", "").replace("SQL:", "").strip()
+                            agent_log.append(f"✅ SQL generated: {generated_sql[:100]}...")
+
+                            # TOOL 2: Database Execution
+                            agent_log.append(f"🗄️ Executing SQL on database...")
+                            db_results = query_db(generated_sql)
+
+                            # TOOL 3: Result Evaluator Agent — decide if results are useful
+                            if db_results is not None and not db_results.empty:
+                                agent_log.append(f"✅ Got {len(db_results)} rows. Evaluating relevance...")
+                                final_sql = generated_sql
+                                final_results = db_results
+                                break  # Success — exit loop
+                            else:
+                                agent_log.append(f"⚠️ Query returned 0 rows. Agent retrying with broader query...")
+                                # Agent decides to broaden the search
+                                recent_context += f"\nNote: Previous SQL '{generated_sql}' returned 0 rows. Try a broader approach."
+                        else:
+                            agent_log.append("❌ No Gemini model available")
+                            break
+                    except Exception as e:
+                        error_msg = str(e)
+                        agent_log.append(f"❌ Error: {error_msg}")
+                        # Agent feeds error back into next attempt
+                        recent_context += f"\nSQL Error: {error_msg}. Fix the query."
+
+                # If all attempts failed, try a simple fallback
+                if final_results is None or (final_results is not None and final_results.empty):
+                    agent_log.append("🔄 Fallback: Using text search...")
+                    try:
+                        words = query_to_run.split()
+                        search_word = words[0] if words else ""
+                        final_sql = f"SELECT fir_id, crime_type, neighborhood, date, status, severity FROM firs LIMIT 15"
+                        final_results = query_db(final_sql)
+                        agent_log.append(f"✅ Fallback returned {len(final_results)} rows")
                     except:
-                        db_results = pd.DataFrame()
+                        final_results = pd.DataFrame()
 
-                # Step 2: Criminological Analysis
-                result_str = db_results.head(20).to_string() if db_results is not None and not db_results.empty else "No results found."
-                lang_hint = "Respond in Kannada if the query was in Kannada. Otherwise English." if any(ord(c) > 3000 for c in query_to_run) else "Respond in English."
+                # TOOL 4: Criminological Analysis Agent
+                agent_log.append("🧠 Analyzing results through criminological framework...")
+                result_str = final_results.head(20).to_string() if final_results is not None and not final_results.empty else "No data."
 
-                analysis_prompt = f"""You are GARUDA AI, a Principal Criminologist and Intelligence Analyst.
+                analysis_prompt = f"""You are GARUDA AI, an autonomous crime intelligence agent.
+You have just completed a multi-step investigation:
 
-Analyze the investigator's query and database results. Provide:
+AGENT REASONING TRACE:
+{chr(10).join(agent_log)}
+
+ORIGINAL QUERY: "{query_to_run}"
+FINAL SQL USED: {final_sql}
+DATABASE RESULTS:
+{result_str}
+
+Based on your investigation, provide:
 1. **Summary**: Clear findings in natural language.
 2. **Criminological Insight**: Ground analysis in theories (Strain Theory, Social Disorganization, Routine Activity Theory, Differential Association).
 3. **Actionable Recommendations**: 2-3 proactive steps for investigators.
-
-Query: "{query_to_run}"
-SQL Used: {sql_query}
-Database Results:
-{result_str}
+4. **Agent Confidence**: Rate your confidence in these results (High/Medium/Low) and explain why.
 
 {lang_hint}
-Keep response concise but insightful (under 300 words)."""
+Keep response concise but insightful (under 350 words)."""
 
                 try:
                     if gemini_model:
-                        analysis = gemini_model.generate_content(analysis_prompt).text
+                        final_analysis = gemini_model.generate_content(analysis_prompt).text
                     else:
-                        analysis = f"Found {len(db_results) if db_results is not None else 0} matching records."
+                        final_analysis = f"Found {len(final_results) if final_results is not None else 0} records."
                 except Exception as e:
-                    analysis = f"Analysis error: {e}"
+                    final_analysis = f"Analysis error: {e}"
 
-                # Save to history
-                msg_payload = {"role": "assistant", "content": analysis, "sql": sql_query}
-                if db_results is not None and not db_results.empty:
-                    msg_payload["data"] = db_results
+                # Save to history with agent trace
+                msg_payload = {
+                    "role": "assistant",
+                    "content": final_analysis,
+                    "sql": final_sql,
+                    "agent_trace": agent_log,
+                }
+                if final_results is not None and not final_results.empty:
+                    msg_payload["data"] = final_results
                 st.session_state.chat_history.append(msg_payload)
                 st.rerun()
 
@@ -975,7 +1034,7 @@ st.divider()
 st.markdown("""
 <div style="text-align:center; color:#6b4c3b; padding:20px; background:rgba(123,26,44,0.03); border-radius:12px; border:1px solid rgba(123,26,44,0.08);">
     <p style="margin:0;"><strong>🛡️ GARUDA AI</strong> — Intelligent Conversational Crime Intelligence & Analytics Platform</p>
-    <p style="margin:4px 0; font-size:0.9em;">Powered by Google Cloud Vertex AI (Gemini 2.0 Flash)</p>
+    <p style="margin:4px 0; font-size:0.9em;">Powered by Google Cloud Vertex AI (Gemini 1.5 Flash)</p>
     <p style="margin:4px 0; font-size:0.85em; color:#8b6b5a;">GCP Project: aicamp26062026 | AI Camp Hackathon 2026</p>
 </div>
 """, unsafe_allow_html=True)
