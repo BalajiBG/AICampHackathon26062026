@@ -1,13 +1,13 @@
 # 🛡️ GARUDA AI — Intelligent Conversational Crime Intelligence & Analytics Platform
 
 > **AI Camp Hackathon 2026 | Track A: Rapid Application Prototyping**  
-> **Team Submission** | GCP Project: `aicamp26062026`
+> **Solo Submission** | GCP Project: `aicamp26062026`
 
 ---
 
 ## 🎯 Problem Statement
 
-Design and develop an Intelligent Conversational AI and Crime Analytics Platform that enables investigators, analysts, and policymakers to interact with the Karnataka state crime database using natural language queries, while providing advanced analytical capabilities grounded in criminology and sociological insights.
+Design and develop an Intelligent Conversational AI and Crime Analytics Platform that enables investigators, analysts, and policymakers to interact with crime database using natural language queries, while providing advanced analytical capabilities grounded in criminology and sociological insights.
 
 ---
 
@@ -75,7 +75,7 @@ Design and develop an Intelligent Conversational AI and Crime Analytics Platform
 ┌────────────────────────────────────────────────────┐
 │                  GARUDA AI Platform                  │
 ├────────────────────────────────────────────────────┤
-│  Frontend: Streamlit (Dark Cyberpunk Theme)         │
+│  Frontend: Streamlit         │
 │  AI Engine: Vertex AI Gemini 2.0 Flash              │
 │  Database: SQLite (Synthetic Karnataka Crime Data)  │
 │  Visualization: Plotly + NetworkX                   │
